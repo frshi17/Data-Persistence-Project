@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,10 +20,17 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
+
+    [System.Serializable]
+    class SaveData
+    {
+        public int score;
+    }
     
     // Start is called before the first frame update
     void Start()
     {
+        BestScoreText.text = "Best Score: " + Menu.Name + " : 0";
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
