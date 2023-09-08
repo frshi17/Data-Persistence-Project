@@ -17,6 +17,8 @@ public class MainManager : MonoBehaviour
     
     private bool m_Started = false;
     private int m_Points;
+    private int high_score = 0;
+    private string winner;
     
     private bool m_GameOver = false;
 
@@ -24,13 +26,39 @@ public class MainManager : MonoBehaviour
     [System.Serializable]
     class SaveData
     {
+        public string NameOfScore;
         public int score;
     }
-    
+
+    public void SaveScore()
+    {
+        SaveData data = new SaveData();
+        data.score = m_Points;
+        data.NameOfScore = Menu.Name;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadScore()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            winner = data.NameOfScore;
+            high_score = data.score;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        BestScoreText.text = "Best Score: " + Menu.Name + " : 0";
+        LoadScore();
+        BestScoreText.text = "Best Score: " + winner + " : " + high_score;
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -81,5 +109,10 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if (m_Points > high_score)
+        {
+            SaveScore();
+        }
     }
 }
